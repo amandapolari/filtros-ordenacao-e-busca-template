@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import styled, { createGlobalStyle } from 'styled-components';
 import pokemons from './pokemon/pokemon.json';
 import PokemonCard from './components/PokemonCard/PokemonCard';
@@ -20,24 +21,71 @@ const CardsContainer = styled.div`
 `;
 function App() {
     const [searchId, setSearchId] = useState('');
+    const [searchName, setSearchName] = useState('');
+    const [sortSearch, setSortSearch] = useState('');
+    const [searchByType, setSearchByType] = useState('');
 
     return (
         <>
             <GlobalStyle />
-            <Header searchId={searchId} setSearchId={setSearchId} />
+            <Header
+                searchId={searchId}
+                setSearchId={setSearchId}
+                searchName={searchName}
+                setSearchName={setSearchName}
+                sortSearch={sortSearch}
+                setSortSearch={setSortSearch}
+                searchByType={searchByType}
+                setSearchByType={setSearchByType}
+            />
             <CardsContainer>
                 {pokemons
-                    // filtrar
                     .filter((pokemon) => {
-                        // if (searchId && pokemon.id === searchId) {
                         if (pokemon.id.includes(searchId)) {
-                            // aqui 36
-                            // console.log(searchId, Boolean(searchId));
                             return pokemon;
-                        } else if (!searchId || searchId < '000') {
-                            // aqui 39
-                            // console.log(searchId, Boolean(searchId));
+                        } else if (!searchId) {
                             return pokemons;
+                        }
+                    })
+                    .filter((pokemon) => {
+                        if (
+                            pokemon.name.english
+                                .toLowerCase()
+                                .includes(searchName.toLowerCase())
+                        ) {
+                            return pokemon;
+                        } else if (!searchName) {
+                            return pokemons;
+                        }
+                    })
+                    // aqui
+                    .filter((pokemon) => {
+                        if (pokemon.type.includes(searchByType)) {
+                            return pokemon;
+                        } else if (
+                            !searchByType ||
+                            searchByType === 'Selecione um tipo'
+                        ) {
+                            return pokemons;
+                        }
+                    })
+                    .sort((a, b) => {
+                        if (sortSearch === 'Crescente') {
+                            if (a.name.english < b.name.english) {
+                                return -1;
+                            }
+                            if (a.name.english > b.name.english) {
+                                return 1;
+                            }
+                            return 0;
+                        } else if (sortSearch === 'Decrescente') {
+                            if (a.name.english < b.name.english) {
+                                return 1;
+                            }
+                            if (a.name.english > b.name.english) {
+                                return -1;
+                            }
+                            return 0;
                         }
                     })
                     .map((pokemon) => {
